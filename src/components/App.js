@@ -46,7 +46,7 @@ export function App() {
 
   // Монтирование информации о пользователе
   React.useEffect(() => {
-    Promise.resolve(api.getUserInfo())
+    api.getUserInfo()
       .then(dataUser => {
         setCurrentUser(dataUser);
       })
@@ -57,7 +57,7 @@ export function App() {
 
   // Монтирование карточек
   React.useEffect(() => {
-    Promise.resolve(api.getCards())
+    api.getCards()
       .then(dataCards => {
         setCardsList(dataCards);
       })
