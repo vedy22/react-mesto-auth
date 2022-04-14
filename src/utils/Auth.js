@@ -4,20 +4,20 @@ function onResponse(res) {
     return res.ok ? res.json() : Promise.reject(`Ошибка: ${res}`);
 }
 
-export const registration = async (email, password) => {
-    const res = await fetch(
+export const registration = (email, password) => {
+    return fetch(
         `${URL}/signup`,
         {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
         }
-    );
-    return onResponse(res);
+    )
+        .then(res => onResponse(res))
 }
 
-export const authorization = async (email, password) => {
-    const res = await fetch(
+export const authorization = (email, password) => {
+    return fetch(
         `${URL}/signin`,
         {
             method: 'POST',
@@ -26,13 +26,15 @@ export const authorization = async (email, password) => {
             },
             body: JSON.stringify({ email, password })
         }
-    );
-    const data = onResponse(res);
-    localStorage.setItem('token', data.token);
+    )
+        .then(res => onResponse(res))
+        .then(data => {
+            localStorage.setItem('token', data.token);
+        })
 }
 
-export const login = async (jwtToken) => {
-    const res = await fetch(
+export const login = (jwtToken) => {
+    return fetch(
         `${URL}/users/me`,
         {
             method: 'GET',
@@ -41,6 +43,6 @@ export const login = async (jwtToken) => {
                 authorization: `Bearer ${jwtToken}`
             }
         }
-    );
-    return onResponse(res);
+    )
+        .then(res => onResponse(res))
 }

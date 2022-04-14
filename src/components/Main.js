@@ -12,11 +12,7 @@ export default function Main(props) {
       <section className="profile">
         <div className="profile__info-wrap">
           <div className="profile__avatar-overley">
-            <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
-              className="profile__avatar"
-            />
+            <img src={currentUser.avatar} alt={currentUser.name} className="profile__avatar" />
             <button
               type="button"
               className="profile__avatar-edit-btn"
@@ -44,7 +40,7 @@ export default function Main(props) {
         ></button>
       </section>
       <section className="elements">
-        {cards.map((item) => {
+        {cards.map(item => {
           return (
             <Card
               key={item._id}
@@ -53,7 +49,7 @@ export default function Main(props) {
               onCardLike={props.onCardLike}
               onDeleteCard={props.onDeleteCard}
             />
-          );
+          )
         })}
       </section>
     </main>
