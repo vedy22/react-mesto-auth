@@ -1,14 +1,37 @@
-import logo from '../images/logo.svg';
+import React, { useState } from "react";
+import { Link, useLocation } from 'react-router-dom';
 
-function Header(props) {
+function Header({email, handleLogOut}) {
+
+  const location = useLocation();
+
+  const [menu, setMenu] = useState('open');
+
+  function toggleMobileMenu() {
+    if(menu === 'open') {
+      setMenu('close');
+    } else {
+      setMenu('open');
+    }
+  }
+
   return (
-    <header className="header">
-      <a href="./index.html" className="header__logo-link">
-        <img src={logo} alt="#" className="header__logo" />
-      </a>
-      <div className="header__account-wrap">
-        {props.loggedIn && <p className='header__email'>{props.email}</p>}
-        <button type="button" className="header__btn-logout" onClick={props.onClick}>{props.loggedIn ? 'Выйти' : props.isLoginNow ? 'Регистрация' : 'Войти'}</button>
+    <header className="header root__container">
+      <div className="header__logo-block">
+        <div className={`header__logo ${menu === 'close' ? 'header__logo_compact' : ''}`}></div>
+        <button onClick={toggleMobileMenu} className={`header__menu-button header__menu-button_type_${menu}`}></button>
+      </div>
+      <div className={`header__auth ${menu === 'close' ? 'header__auth_visible' : ''}`}>
+        {email && email}
+        {email ? (
+          <Link onClick={handleLogOut} className="header__link header__link_opacity" to="#">
+            Выйти
+          </Link>
+        ) : (
+          <Link className="header__link" to={location.pathname === '/sign-up' ? '/sign-in' : '/sign-up'}>
+            {location.pathname === '/sign-up' ? 'Вход' : 'Регистрация'}
+          </Link>
+        )}
       </div>
     </header>
   );

@@ -1,57 +1,65 @@
-import React from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
 import Card from "./Card";
-import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
-import { CardsContext } from "../contexts/CardsContext.js";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
-export default function Main(props) {
+function Main({
+  onEditAvatar,
+  onEditProfile,
+  onAddPlace,
+  onCardClick,
+  cards,
+  onCardLike,
+  onCardDelete,
+}) {
   const currentUser = React.useContext(CurrentUserContext);
-  const cards = React.useContext(CardsContext);
 
   return (
-    <main className="main">
-      <section className="profile">
-        <div className="profile__info-wrap">
-          <div className="profile__avatar-overley">
-            <img src={currentUser.avatar} alt={currentUser.name} className="profile__avatar" />
+    <main>
+      <section className="profile root__container">
+        <div onClick={onEditAvatar} className="profile__avatar-container">
+          <img
+            alt="Аватар пользователя"
+            className="profile__avatar"
+            src={currentUser.avatar}
+          />
+        </div>
+        <div className="profile__info">
+          <div className="profile__info-inner">
+            <h1 className="profile__name">{currentUser.name}</h1>
             <button
+              onClick={onEditProfile}
               type="button"
-              className="profile__avatar-edit-btn"
-              onClick={props.onEditAvatar}
+              aria-label="Редактировать профиль"
+              className="profile__edit-button"
             ></button>
           </div>
-          <div className="profile__info">
-            <div className="profile__info-elems">
-              <h1 className="profile__name">{currentUser.name}</h1>
-              <button
-                type="button"
-                className="profile__edit-button"
-                aria-label="Редактировать профиль"
-                onClick={props.onEditProfile}
-              ></button>
-            </div>
-            <p className="profile__description">{currentUser.about}</p>
-          </div>
+          <p className="profile__about">{currentUser.about}</p>
         </div>
         <button
-          className="profile__add-button"
+          onClick={onAddPlace}
           type="button"
-          aria-label="Добавить карточку"
-          onClick={props.onAddPlace}
+          aria-label="Добавить новое место"
+          className="profile__add-button"
+          title="Добавить новое место"
         ></button>
       </section>
-      <section className="elements">
-        {cards.map(item => {
-          return (
+
+      <section className="photo-grid root__container">
+        <ul className="places">
+          {cards.map((card, i) => (
             <Card
-              key={item._id}
-              card={item}
-              onCardClick={props.onCardClick}
-              onCardLike={props.onCardLike}
-              onDeleteCard={props.onDeleteCard}
+              onCardLike={onCardLike}
+              onCardDelete={onCardDelete}
+              onCardClick={onCardClick}
+              card={card}
+              key={card._id}
             />
-          )
-        })}
+          ))}
+        </ul>
       </section>
     </main>
   );
 }
+
+export default Main;

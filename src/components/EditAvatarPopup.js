@@ -1,45 +1,47 @@
-import React from 'react';
-import PopupWithForm from './PopupWithForm';
+import React, { useEffect } from "react";
+import PopupWithForm from "./PopupWithForm";
 
-export default function EditAvatarPopup(props) {
-    const [avatar, setAvatar] = React.useState('');
+function EditAvatarPopup({ onClose, isOpen, onUpdateAvatar }) {
 
-    React.useEffect(() => {
-        setAvatar('');
-    }, [props.isOpen])
+const avatarUrl = React.useRef('');
 
-    function handleSubmit(event) {
-        event.preventDefault();
+function handleSubmit(e) {
+  e.preventDefault();
 
-        props.onUpdateAvatar({
-            avatar
-        })
-    }
-
-    function handleAvatarLink(event) {
-        setAvatar(event.target.value);
-    }
-
-    return (
-        <PopupWithForm
-            title="Обновить аватар"
-            name="update-avatar"
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            buttonText="Сохранить"
-            onSubmit={handleSubmit}
-        >
-            <input
-                type="url"
-                id="popup__ava-link"
-                className="popup__input"
-                placeholder="Ссылка на изображение"
-                name="link"
-                onChange={handleAvatarLink}
-                value={avatar}
-                required
-            />
-            <span className="popup__form-error popup__pic-link-error"></span>
-        </PopupWithForm>
-    )
+  onUpdateAvatar({
+    avatar: avatarUrl.current.value,
+  });
 }
+
+useEffect(() => {
+  avatarUrl.current.value = '';
+}, [isOpen]);
+
+return (
+  <PopupWithForm
+    onClose={onClose}
+    isOpen={isOpen}
+    onSubmit={handleSubmit}
+    name="edit-avatar"
+    title="Обновить аватар"
+  >
+    <div className="popup__field">
+      <input
+        ref={avatarUrl}
+        type="url"
+        placeholder="Ссылка на аватар"
+        name="link"
+        id="input-avatar-source"
+        className="popup__input"
+        required
+      />
+      <span
+        id="input-avatar-source-error"
+        className="popup__input-error"
+      ></span>
+    </div>
+  </PopupWithForm>
+  );
+}
+
+export default EditAvatarPopup;

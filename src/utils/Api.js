@@ -1,98 +1,95 @@
 class Api {
-    constructor({ url, headers }) {
-        this._url = url;
-        this._headers = headers;
+  constructor({baseUrl, headers}) {
+    this.baseUrl = baseUrl;
+    this.headers = headers;
+  }
+
+  _checkApiResponse(res) {
+    if (res.ok) {
+      return res.json();
     }
 
-    onResponse(res) {
-        return res.ok ? res.json() : Promise.reject(`Ошибка: ${res}`);
-    }
+    return Promise.reject(`Произошла ошибка: ${res.status}`);
+  }
 
-    // Получает все карточки
-    getCards() {
-        return fetch(`${this._url}/cards`, {
-            headers: this._headers
+  getInitialCards() {
+    return fetch(`${this.baseUrl}/cards`, { headers: this.headers })
+      .then(this._checkApiResponse);
+  }
+
+  postCard(name, link) {
+    return fetch(`${this.baseUrl}/cards`, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify({
+          name: name,
+          link: link
         })
-            .then(this.onResponse)
-    }
+      })
+      .then(res => this._checkApiResponse(res));
+  }
 
-    // Получает информацию о пользователе
-    getUserInfo() {
-        return fetch(`${this._url}/users/me`, {
-            headers: this._headers,
-        })
-            .then(this.onResponse)
-    }
+  deleteCard(id) {
+    return fetch(`${this.baseUrl}/cards/${id}`, {
+        method: 'DELETE',
+        headers: this.headers
+      })
+      .then(res => this._checkApiResponse(res));
+  }
 
-    // Отправляет информацию о пользователе на сервер
-    sendProfileDatasToServer(name, about) {
-        return fetch(`${this._url}/users/me`, {
-            method: 'PATCH',
-            headers: this._headers,
-            body: JSON.stringify({
-                name,
-                about,
-            })
-        })
-            .then(this.onResponse)
+  changeLikeCardStatus(id, isLiked) {
+    if(isLiked) {
+      return fetch(`${this.baseUrl}/cards/${id}/likes`, {
+        method: 'PUT',
+        headers: this.headers
+      })
+      .then(res => this._checkApiResponse(res));
+    } else {
+      return fetch(`${this.baseUrl}/cards/${id}/likes`, {
+        method: 'DELETE',
+        headers: this.headers
+      })
+      .then(res => this._checkApiResponse(res));
     }
+  }
 
-    // Отправляет аватар пользователя на сервер
-    sendAvatarToServer(avatar) {
-        return fetch(`${this._url}/users/me/avatar`, {
-            method: 'PATCH',
-            headers: this._headers,
-            body: JSON.stringify({ avatar }),
-        })
-            .then(this.onResponse)
-    }
+  changeAvatar(link) {
+    return fetch(`${this.baseUrl}/users/me/avatar`, {
+      method: 'PATCH',
+      headers: this.headers,
+      body: JSON.stringify({
+        avatar: link
+      })
+    })
+    .then(res => this._checkApiResponse(res));
+  }
 
-    // Отправляет карточку на сервер
-    postCard({ name, link }) {
-        return fetch(`${this._url}/cards`, {
-            method: 'POST',
-            headers: this._headers,
-            body: JSON.stringify({
-                name,
-                link,
-            })
-        })
-            .then(this.onResponse)
-    }
+  editUserInfo(name, about) {
+    return fetch(`${this.baseUrl}/users/me`, {
+      method: 'PATCH',
+      headers: this.headers,
+      body: JSON.stringify({
+        name: name,
+        about: about
+      })
+    })
+    .then(res => this._checkApiResponse(res));
+  }
 
-    // Удаляет карточку с сервера
-    deleteCard(cardId) {
-        return fetch(`${this._url}/cards/${cardId}`, {
-            method: 'DELETE',
-            headers: this._headers,
-        })
-            .then(this.onResponse)
-    }
+  getUserInfo() {
+    return fetch(`${this.baseUrl}/users/me`, { headers: this.headers })
+    .then(res => this._checkApiResponse(res));
+  }
 
-    // Лайки
-    toggleCardLike(cardId, method) {
-        return fetch(`${this._url}/cards/likes/${cardId}`, {
-            method,
-            headers: this._headers,
-        })
-            .then(this.onResponse)
-    }
-
-    changeLikeCardStatus(cardId, isLiked) {
-        return fetch(`${this._url}/cards/likes/${cardId}`, {
-            method: `${isLiked ? 'PUT' : 'DELETE'}`,
-            headers: this._headers,
-        })
-            .then(this.onResponse)
-    }
+  getAllNeededData() {
+    return Promise.all([this.getInitialCards(), this.getUserInfo()])
+  }
 }
 
-const api = new Api({
-    url: 'https://mesto.nomoreparties.co/v1/cohort36',
-    headers: {
-        authorization: '37537b48-8cd1-46df-bdda-50c6c5fa0f5b',
-        'Content-Type': 'application/json'
-    }
-})
-
-export default api;
+export const api = new Api({
+  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort36',
+  headers: {
+    authorization: '37537b48-8cd1-46df-bdda-50c6c5fa0f5b',
+    'Content-Type': 'application/json'
+  }
+});
